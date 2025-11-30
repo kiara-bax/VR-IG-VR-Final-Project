@@ -1,47 +1,29 @@
-
-
+//imports
 import {
-  AssetType,
-  Mesh,
-  MeshBasicMaterial,
-  PlaneGeometry,
-  SessionMode,
-  SRGBColorSpace,
-  AssetManager,
-  World,
-  SphereGeometry,
-  MeshStandardMaterial,
-  LocomotionEnvironment,
-  EnvironmentType,
-  PanelUI,
-  Interactable,
-  ScreenSpace,
+  AssetType, Mesh, MeshBasicMaterial, PlaneGeometry, SessionMode,
+  SRGBColorSpace, AssetManager, World, SphereGeometry, MeshStandardMaterial,
+  LocomotionEnvironment, EnvironmentType, PanelUI, Interactable, ScreenSpace,
   PhysicsBody, PhysicsShape, PhysicsShapeType, PhysicsState, PhysicsSystem
 } from '@iwsdk/core';
 
-
 import { PanelSystem } from './panel.js';
-
-
+//assets
 const assets = {
   chimeSound: {
     url: '/audio/chime.mp3',
     type: AssetType.Audio,
     priority: 'background'
   },
-
   candyCane: {
     url: '/glxf/the-sugar-cane-red/source/The Sugar Cane (Red).glb',
     type: AssetType.GLTF,
     priority: 'critical',
   },
-
   hedge: {
     url: '/glxf/hedge_block.glb',
     type: AssetType.GLTF,
     priority: 'critical',
   },
-
 };
 
 World.create(document.getElementById('scene-container'), {
@@ -49,7 +31,6 @@ World.create(document.getElementById('scene-container'), {
   xr: {
     sessionMode: SessionMode.ImmersiveVR,
     offer: 'always',
-    // Optional structured features; layers/local-floor are offered by default
     features: { handTracking: true, layers: false, locomotion: true, grabbing: true } 
   },
   features: { locomotion: { useWorker: true }, grabbing: true, physics: true},
@@ -57,6 +38,16 @@ World.create(document.getElementById('scene-container'), {
 }).then((world) => {
   const { camera } = world;
 
+  //floor
+  const floorMesh = new Mesh(new PlaneGeometry(100, 100), new MeshStandardMaterial({color:"green"}));
+  floorMesh.rotation.x = -Math.PI / 2;
+  //floor entity
+  const floorEntity = world.createTransformEntity(floorMesh);
+  floorEntity.addComponent(LocomotionEnvironment, { type: EnvironmentType.STATIC });
+  floorEntity.addComponent(PhysicsShape, { shape: PhysicsShapeType.Auto});
+  floorEntity.addComponent(PhysicsBody, { state: PhysicsState.Static });
+
+  //maze
   const maze = [
     [1,1,1,1,1,1,1,1],
     [1,0,0,0,1,0,0,1],
@@ -68,18 +59,23 @@ World.create(document.getElementById('scene-container'), {
     [1,1,1,1,1,1,1,1],
   ];
   
+  const floorSize = 100;
+  const rows = maze.length;
+  const cols = maze[0].length;
+  const cellSize = floorSize / rows;
 
-  // create a floor
-  const floorMesh = new Mesh(new PlaneGeometry(100, 100), new MeshStandardMaterial({color:"green"}));
-  floorMesh.rotation.x = -Math.PI / 2;
-  const floorEntity = world.createTransformEntity(floorMesh);
-  floorEntity.addComponent(LocomotionEnvironment, { type: EnvironmentType.STATIC });
-  floorEntity.addComponent(PhysicsShape, { shape: PhysicsShapeType.Auto});
-  floorEntity.addComponent(PhysicsBody, { state: PhysicsState.Static });
+  const startX = -floorSize / 2;
+  const startZ = floorSize / 2;
+  const entrance = {row: 1, col: 1};
+  const exit = {row: 5, col: 6};
 
+  const hedgeAsset = AssetManager.getGLTF('hedge').scene;
+  const candyCaneAsset = AssetManager.getGLTF('candyCane').scene;
+
+  //spawn random hedges
   function spawnHedge(world, hedgeAsset, x, z) {
     const hedge = hedgeAsset.clone();
-    hedge.position.set(x, -2, z);
+    hedge.position.set(x, 0, z);
     hedge.scale.set(0.25, 0.25, 0.25);
 
     const hedgeEntity = world.createTransformEntity(hedge);
@@ -87,13 +83,13 @@ World.create(document.getElementById('scene-container'), {
     const hedgeBody = new PhysicsBody({
       type: PhysicsState.STATIC,
       shapes: [new PhysicsShape({
-        shape: PhysicsShapeType.Box,
+        shape: PhysicsShapeType.BOX,
         size: {x: cellSize * 0.9, y: 4, z: cellSize * 0.9}, }), ], });
 
     world.addPhysicsBody(hedgeEntity, hedgeBody);
-    return hedgeEntity;
   }
 
+  //spawn random candycanes
   function spawnCollectible(world, candyCaneAsset, x, z) {
     const candyCane = candyCaneAsset.clone();
     candyCane.position.set(x, 0.5, z);
@@ -102,72 +98,21 @@ World.create(document.getElementById('scene-container'), {
     const candyCaneEntity = world.createTransformEntity(candyCane);
     candyCaneEntity.addComponent(PhysicsShape, { shape: PhysicsShapeType.Auto });
     candyCaneEntity.addComponent(PhysicsBody, { state: PhysicsState.Static });
-
-    return candyCaneEntity;
   }
 
-  function randomPlace(arr){
-    return arr[Math.floor(Math.random() * arr.length)];
+  function randomPlace(list){
+    return list[Math.floor(Math.random() * list.length)];
   }
 
-  const entranceX = startX + 1 * cellSize;
-  const entranceZ = startZ - 1 * cellSize;
-
-  function spawnRandomObject(world, pathList, asset) {
-    const spot = pathList[Math.floor(Math.random() * pathList.length)];
-    const obj = asset.clone();
-
-    obj.position.set(spot.x, -1, spot.z);
-    obj.scale.set(0.5, 0.5, 0.5);
-
-    world.createTransformEntity(obj);
-  }
-
-  const pathList = [];
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < cols; col++) {
-      if (maze[row][col] === 0) {
-        const x = startX + col * cellSize;
-        const z = startZ - row * cellSize;
-        pathList.push({ x, z });
-      }
-    }
-  }
-
-  const candyCane = AssetManager.getGLTF("candyCane").scene;
-  for (let i = 0; i < 5; i++) {
-    spawnRandomObject(world, pathList, candyCane);
-  }
-
-
-  const player = world.getPlayer();
-
-  player.setPosition(entranceX, 1, entranceZ);
-  player.setRotation(0, Math.PI, 0);
-
-  const hedgeAsset = AssetManager.getGLTF('hedge').scene;
-  const candyCaneAsset = AssetManager.getGLTF('candyCane').scene;
-
-  const floorSize = 100;
-  const rows = maze.length;
-  const cols = maze[0].length;
-
-  const cellSize = floorSize / rows;
-
-  const startX = -floorSize / 2;
-  const startZ = floorSize / 2;
-
-  const entrance = {row: 1, col: 1};
-  const exit = {row: 5, col: 6};
-
+  //create maze
   const openCells = [];
   
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
+      const x = startX + col * cellSize;
+      const z = startZ - row * cellSize; 
+      
       if (maze[row][col] === 1) {
-        const x = startX + col * cellSize;
-        const z = startZ - row * cellSize; 
-        
         spawnHedge(world, hedgeAsset, x, z, cellSize);
       } else {
         openCells.push({ x, z });
@@ -175,49 +120,46 @@ World.create(document.getElementById('scene-container'), {
     }
   }
 
-  const startCell = {
-    x: startX + entrance.col * cellSize,
-    z: startZ - entrance.row * cellSize
-  };
-  world.camera.position.set(startCell.x, 1.7, startCell.z);
-
-  const exitCell = {
-    x: startX + exit.col * cellSize,
-    z: startZ - exit.row * cellSize
-  };
-  const exitObject = spawnCollectible(world, candyMesh, exitCell.x, exitCell.z);
-
-  const collectiblesToSpawn = 5;
-  for (let i = 0; i < collectiblesToSpawn; i++) {
-    const cell = randomChoice(openCells);
-    spawnCollectible(world, candyMesh, cell.x, cell.z);
-  }
+  //player start position
+  const entranceX = startX + entrance.col * cellSize;
+  const entranceZ = startZ - entrance.row * cellSize;
   
-  const chime = AssetManager.getAudio('chimeSound');
+  const player = world.getPlayer();
+  player.setPosition(entranceX, 1, entranceZ);
+  player.setRotation(0, Math.PI, 0);
 
-  function checkGoal() {
+  //exit indicator
+  const exitX = startX + exit.col * cellSize;
+  const exitZ = startZ - exit.row * cellSize;
+
+  spawnCollectible(world, candyCaneAsset, exitX, exitZ);
+
+  //randomize collectibles
+  for (let i = 0; i < 5; i++) {
+    const cell = randomPlace(openCells);
+    spawnCollectible(world, candyCaneAsset, cell.x, cell.z);
+  }
+
+  //game loop
+  const chime = AssetManager.getAudio("chimeSound");
+
+  function gameLoop(){
     const cam = world.camera.position;
 
-    const dx = cam.x - exitCell.x;
-    const dz = cam.z - exitCell.z;
+    const dx = cam.x - exitX;
+    const dz = cam.z - exitZ;
 
-    if (Math.sqrt(dx * dx + dz * dz) < 1.2) {
+    if (Math.sqrt(dx * dx + dz * dz) < 1.2 ){
       chime.play();
-      console.log("You reached the end of the maze!");
+      console.log("You have reached the end of the maze!");
     }
-
-    requestAnimationFrame(checkGoal);
+    requestAnimationFrame(gameLoop);
   }
 
-  checkGoal();
+  gameLoop();
 
   world.registerSystem(PhysicsSystem).registerComponent(PhysicsBody).registerComponent(PhysicsShape);
   
-
-
-
-
-
   // vvvvvvvv EVERYTHING BELOW WAS ADDED TO DISPLAY A BUTTON TO ENTER VR FOR QUEST 1 DEVICES vvvvvv
   //          (for some reason IWSDK doesn't show Enter VR button on Quest 1)
   world.registerSystem(PanelSystem);
