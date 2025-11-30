@@ -56,42 +56,6 @@ World.create(document.getElementById('scene-container'), {
   level: '/glxf/Composition.glxf' 
 }).then((world) => {
   const { camera } = world;
-  
-  // Create a green sphere
-  // const sphereGeometry = new SphereGeometry(0.25, 32, 32);
-  // const greenMaterial = new MeshStandardMaterial({ color: "red" });
-  // const sphere = new Mesh(sphereGeometry, greenMaterial);
-  // sphere.position.set(1, 1.5, -3);
-  // const sphereEntity = world.createTransformEntity(sphere);
-  // sphereEntity.addComponent(PhysicsShape, { shape: PhysicsShapeType.Auto,  density: 0.2,  friction: 0.5,  restitution: 0.9 });
-  // sphereEntity.addComponent(PhysicsBody, { state: PhysicsState.Dynamic });
-
-  // create a floor
-  const floorMesh = new Mesh(new PlaneGeometry(100, 100), new MeshStandardMaterial({color:"green"}));
-  floorMesh.rotation.x = -Math.PI / 2;
-  const floorEntity = world.createTransformEntity(floorMesh);
-  floorEntity.addComponent(LocomotionEnvironment, { type: EnvironmentType.STATIC });
-  floorEntity.addComponent(PhysicsShape, { shape: PhysicsShapeType.Auto});
-  floorEntity.addComponent(PhysicsBody, { state: PhysicsState.Static });
-
-  // let numBounces = 0;
-  // function gameLoop() {
-  //     //console.log(sphereEntity.object3D.position.y);
-  //     if (sphereEntity.object3D.position.y < 0.27) {
-  //         numBounces += 1;
-  //         console.log(`Sphere has bounced ${numBounces} times`);
-  //         //sphereEntity.destroy()
-  //     }
-  //     requestAnimationFrame(gameLoop);
-  //   }
-  // gameLoop();
-
-  function spawnHedge(world, hedgeAsset, x, z) {
-    const hedge = hedgeAsset.clone();
-    hedge.position.set(x, -2, z);
-    hedge.scale.set(0.25, 0.25, 0.25);
-    return world.createTransformEntity(hedge);
-  }
 
   const maze = [
     [1,1,1,1,1,1,1,1],
@@ -102,12 +66,89 @@ World.create(document.getElementById('scene-container'), {
     [1,0,0,0,0,1,0,1],
     [1,1,1,1,0,1,0,1],
     [1,1,1,1,1,1,1,1],
-  ]
+  ];
+  
+
+  // create a floor
+  const floorMesh = new Mesh(new PlaneGeometry(100, 100), new MeshStandardMaterial({color:"green"}));
+  floorMesh.rotation.x = -Math.PI / 2;
+  const floorEntity = world.createTransformEntity(floorMesh);
+  floorEntity.addComponent(LocomotionEnvironment, { type: EnvironmentType.STATIC });
+  floorEntity.addComponent(PhysicsShape, { shape: PhysicsShapeType.Auto});
+  floorEntity.addComponent(PhysicsBody, { state: PhysicsState.Static });
+
+  function spawnHedge(world, hedgeAsset, x, z) {
+    const hedge = hedgeAsset.clone();
+    hedge.position.set(x, -2, z);
+    hedge.scale.set(0.25, 0.25, 0.25);
+
+    const hedgeEntity = world.createTransformEntity(hedge);
+
+    const hedgeBody = new PhysicsBody({
+      type: PhysicsState.STATIC,
+      shapes: [new PhysicsShape({
+        shape: PhysicsShapeType.Box,
+        size: {x: cellSize * 0.9, y: 4, z: cellSize * 0.9}, }), ], });
+
+    world.addPhysicsBody(hedgeEntity, hedgeBody);
+    return hedgeEntity;
+  }
+
+  function spawnCollectible(world, candyCaneAsset, x, z) {
+    const candyCane = candyCaneAsset.clone();
+    candyCane.position.set(x, 0.5, z);
+    candyCane.scale.set(0.35, 0.35, 0.35);
+
+    const candyCaneEntity = world.createTransformEntity(candyCane);
+    candyCaneEntity.addComponent(PhysicsShape, { shape: PhysicsShapeType.Auto });
+    candyCaneEntity.addComponent(PhysicsBody, { state: PhysicsState.Static });
+
+    return candyCaneEntity;
+  }
+
+  function randomPlace(arr){
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  const entranceX = startX + 1 * cellSize;
+  const entranceZ = startZ - 1 * cellSize;
+
+  function spawnRandomObject(world, pathList, asset) {
+    const spot = pathList[Math.floor(Math.random() * pathList.length)];
+    const obj = asset.clone();
+
+    obj.position.set(spot.x, -1, spot.z);
+    obj.scale.set(0.5, 0.5, 0.5);
+
+    world.createTransformEntity(obj);
+  }
+
+  const pathList = [];
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      if (maze[row][col] === 0) {
+        const x = startX + col * cellSize;
+        const z = startZ - row * cellSize;
+        pathList.push({ x, z });
+      }
+    }
+  }
+
+  const candyCane = AssetManager.getGLTF("candyCane").scene;
+  for (let i = 0; i < 5; i++) {
+    spawnRandomObject(world, pathList, candyCane);
+  }
+
+
+  const player = world.getPlayer();
+
+  player.setPosition(entranceX, 1, entranceZ);
+  player.setRotation(0, Math.PI, 0);
 
   const hedgeAsset = AssetManager.getGLTF('hedge').scene;
+  const candyCaneAsset = AssetManager.getGLTF('candyCane').scene;
 
   const floorSize = 100;
-
   const rows = maze.length;
   const cols = maze[0].length;
 
@@ -115,17 +156,60 @@ World.create(document.getElementById('scene-container'), {
 
   const startX = -floorSize / 2;
   const startZ = floorSize / 2;
+
+  const entrance = {row: 1, col: 1};
+  const exit = {row: 5, col: 6};
+
+  const openCells = [];
   
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
       if (maze[row][col] === 1) {
         const x = startX + col * cellSize;
         const z = startZ - row * cellSize; 
-        spawnHedge(world, hedgeAsset, x, z);
+        
+        spawnHedge(world, hedgeAsset, x, z, cellSize);
+      } else {
+        openCells.push({ x, z });
       }
     }
   }
+
+  const startCell = {
+    x: startX + entrance.col * cellSize,
+    z: startZ - entrance.row * cellSize
+  };
+  world.camera.position.set(startCell.x, 1.7, startCell.z);
+
+  const exitCell = {
+    x: startX + exit.col * cellSize,
+    z: startZ - exit.row * cellSize
+  };
+  const exitObject = spawnCollectible(world, candyMesh, exitCell.x, exitCell.z);
+
+  const collectiblesToSpawn = 5;
+  for (let i = 0; i < collectiblesToSpawn; i++) {
+    const cell = randomChoice(openCells);
+    spawnCollectible(world, candyMesh, cell.x, cell.z);
+  }
   
+  const chime = AssetManager.getAudio('chimeSound');
+
+  function checkGoal() {
+    const cam = world.camera.position;
+
+    const dx = cam.x - exitCell.x;
+    const dz = cam.z - exitCell.z;
+
+    if (Math.sqrt(dx * dx + dz * dz) < 1.2) {
+      chime.play();
+      console.log("You reached the end of the maze!");
+    }
+
+    requestAnimationFrame(checkGoal);
+  }
+
+  checkGoal();
 
   world.registerSystem(PhysicsSystem).registerComponent(PhysicsBody).registerComponent(PhysicsShape);
   
