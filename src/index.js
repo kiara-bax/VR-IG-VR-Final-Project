@@ -30,6 +30,18 @@ const assets = {
     priority: 'background'
   },
 
+  candyCane: {
+    url: '/glxf/the-sugar-cane-red/source/The Sugar Cane (Red).glb',
+    type: AssetType.GLTF,
+    priority: 'critical',
+  },
+
+  hedge: {
+    url: '/glxf/hedge_block.glb',
+    type: AssetType.GLTF,
+    priority: 'critical',
+  },
+
 };
 
 World.create(document.getElementById('scene-container'), {
@@ -38,7 +50,7 @@ World.create(document.getElementById('scene-container'), {
     sessionMode: SessionMode.ImmersiveVR,
     offer: 'always',
     // Optional structured features; layers/local-floor are offered by default
-    features: { handTracking: true, layers: false } 
+    features: { handTracking: true, layers: false, locomotion: true, grabbing: true } 
   },
   features: { locomotion: { useWorker: true }, grabbing: true, physics: true},
   level: '/glxf/Composition.glxf' 
@@ -46,36 +58,75 @@ World.create(document.getElementById('scene-container'), {
   const { camera } = world;
   
   // Create a green sphere
-  const sphereGeometry = new SphereGeometry(0.25, 32, 32);
-  const greenMaterial = new MeshStandardMaterial({ color: "red" });
-  const sphere = new Mesh(sphereGeometry, greenMaterial);
-  sphere.position.set(1, 1.5, -3);
-  const sphereEntity = world.createTransformEntity(sphere);
-  sphereEntity.addComponent(PhysicsShape, { shape: PhysicsShapeType.Auto,  density: 0.2,  friction: 0.5,  restitution: 0.9 });
-  sphereEntity.addComponent(PhysicsBody, { state: PhysicsState.Dynamic });
+  // const sphereGeometry = new SphereGeometry(0.25, 32, 32);
+  // const greenMaterial = new MeshStandardMaterial({ color: "red" });
+  // const sphere = new Mesh(sphereGeometry, greenMaterial);
+  // sphere.position.set(1, 1.5, -3);
+  // const sphereEntity = world.createTransformEntity(sphere);
+  // sphereEntity.addComponent(PhysicsShape, { shape: PhysicsShapeType.Auto,  density: 0.2,  friction: 0.5,  restitution: 0.9 });
+  // sphereEntity.addComponent(PhysicsBody, { state: PhysicsState.Dynamic });
 
   // create a floor
-  const floorMesh = new Mesh(new PlaneGeometry(20, 20), new MeshStandardMaterial({color:"tan"}));
+  const floorMesh = new Mesh(new PlaneGeometry(100, 100), new MeshStandardMaterial({color:"green"}));
   floorMesh.rotation.x = -Math.PI / 2;
   const floorEntity = world.createTransformEntity(floorMesh);
   floorEntity.addComponent(LocomotionEnvironment, { type: EnvironmentType.STATIC });
   floorEntity.addComponent(PhysicsShape, { shape: PhysicsShapeType.Auto});
   floorEntity.addComponent(PhysicsBody, { state: PhysicsState.Static });
 
-  let numBounces = 0;
-  function gameLoop() {
-      //console.log(sphereEntity.object3D.position.y);
-      if (sphereEntity.object3D.position.y < 0.27) {
-          numBounces += 1;
-          console.log(`Sphere has bounced ${numBounces} times`);
-          //sphereEntity.destroy()
-      }
-      requestAnimationFrame(gameLoop);
-    }
-  gameLoop();
+  // let numBounces = 0;
+  // function gameLoop() {
+  //     //console.log(sphereEntity.object3D.position.y);
+  //     if (sphereEntity.object3D.position.y < 0.27) {
+  //         numBounces += 1;
+  //         console.log(`Sphere has bounced ${numBounces} times`);
+  //         //sphereEntity.destroy()
+  //     }
+  //     requestAnimationFrame(gameLoop);
+  //   }
+  // gameLoop();
 
+  function spawnHedge(world, hedgeAsset, x, z) {
+    const hedge = hedgeAsset.clone();
+    hedge.position.set(x, -2, z);
+    hedge.scale.set(0.25, 0.25, 0.25);
+    return world.createTransformEntity(hedge);
+  }
 
+  const maze = [
+    [1,1,1,1,1,1,1,1],
+    [1,0,0,0,1,0,0,1],
+    [1,0,1,0,1,0,1,1],
+    [1,0,1,0,0,0,0,1],
+    [1,0,1,1,1,1,0,1],
+    [1,0,0,0,0,1,0,1],
+    [1,1,1,1,0,1,0,1],
+    [1,1,1,1,1,1,1,1],
+  ]
+
+  const hedgeAsset = AssetManager.getGLTF('hedge').scene;
+
+  const floorSize = 100;
+
+  const rows = maze.length;
+  const cols = maze[0].length;
+
+  const cellSize = floorSize / rows;
+
+  const startX = -floorSize / 2;
+  const startZ = floorSize / 2;
   
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      if (maze[row][col] === 1) {
+        const x = startX + col * cellSize;
+        const z = startZ - row * cellSize; 
+        spawnHedge(world, hedgeAsset, x, z);
+      }
+    }
+  }
+  
+
   world.registerSystem(PhysicsSystem).registerComponent(PhysicsBody).registerComponent(PhysicsShape);
   
 
