@@ -109,7 +109,7 @@ World.create(document.getElementById('scene-container'), {
   
 
   // create floor
-  const floorGeometry = new PlaneGeometry(50, 50);
+  const floorGeometry = new PlaneGeometry(55, 55);
   const floorMaterial = new MeshStandardMaterial({ color: 'green' });
   const floorMesh = new Mesh(floorGeometry, floorMaterial);
   floorMesh.rotation.x = -Math.PI / 2;
@@ -121,6 +121,7 @@ World.create(document.getElementById('scene-container'), {
 
   // import maze wall
   const mazeAsset = AssetManager.getGLTF('maze').scene;
+  //left side
   //maze wall 1
   const maze1 = mazeAsset.clone();
   maze1.position.set(25, 0, 25);
@@ -163,7 +164,334 @@ World.create(document.getElementById('scene-container'), {
   maze7.scale.set(0.10, 0.10, 0.10);
   const maze7Entity = world.createTransformEntity(maze7).addComponent(PhysicsShape, { 
     shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 1f
+  const maze1f = mazeAsset.clone();
+  maze1f.position.set(20, 0, 20);
+  maze1f.scale.set(0.10, 0.10, 0.10);
+  const maze1fEntity = world.createTransformEntity(maze1f).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 2f
+  const maze2f = mazeAsset.clone();
+  maze2f.position.set(20, 0, 17.5);
+  maze2f.scale.set(0.10, 0.10, 0.10);
+  const maze2fEntity = world.createTransformEntity(maze2f).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 3f
+  const maze3f = mazeAsset.clone();
+  maze3f.position.set(20, 0, 10);
+  maze3f.scale.set(0.10, 0.10, 0.10);
+  const maze3fEntity = world.createTransformEntity(maze3f).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 4f
+  const maze4f = mazeAsset.clone();
+  maze4f.position.set(20, 0, 2.5);
+  maze4f.scale.set(0.10, 0.10, 0.10);
+  const maze4fEntity = world.createTransformEntity(maze4f).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 5f
+  const maze5f = mazeAsset.clone();
+  maze5f.position.set(20, 0, -5);
+  maze5f.scale.set(0.10, 0.10, 0.10);
+  const maze5fEntity = world.createTransformEntity(maze5f).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 6f
+  const maze6f = mazeAsset.clone();
+  maze6f.position.set(20, 0, -12.5);
+  maze6f.scale.set(0.10, 0.10, 0.10);
+  const maze6fEntity = world.createTransformEntity(maze6f).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //right side
+    //maze wall 1a
+  const maze1a = mazeAsset.clone();
+  maze1a.position.set(-25, 0, 25);
+  maze1a.scale.set(0.10, 0.10, 0.10);
+  const maze1aEntity = world.createTransformEntity(maze1a).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 2a
+  const maze2a = mazeAsset.clone();
+  maze2a.position.set(-25, 0, 17.5);
+  maze2a.scale.set(0.10, 0.10, 0.10);
+  const maze2aEntity = world.createTransformEntity(maze2a).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 3a
+  const maze3a = mazeAsset.clone();
+  maze3a.position.set(-25, 0, 10);
+  maze3a.scale.set(0.10, 0.10, 0.10);
+  const maze3aEntity = world.createTransformEntity(maze3a).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 4a
+  const maze4a = mazeAsset.clone();
+  maze4a.position.set(-25, 0, 2.5);
+  maze4a.scale.set(0.10, 0.10, 0.10);
+  const maze4aEntity = world.createTransformEntity(maze4a).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 5a
+  const maze5a = mazeAsset.clone();
+  maze5a.position.set(-25, 0, -5);
+  maze5a.scale.set(0.10, 0.10, 0.10);
+  const maze5aEntity = world.createTransformEntity(maze5a).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 6a
+  const maze6a = mazeAsset.clone();
+  maze6a.position.set(-25, 0, -12.5);
+  maze6a.scale.set(0.10, 0.10, 0.10);
+  const maze6aEntity = world.createTransformEntity(maze6a).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 7a
+  const maze7a = mazeAsset.clone();
+  maze7a.position.set(-25, 0, -20);
+  maze7a.scale.set(0.10, 0.10, 0.10);
+  const maze7aEntity = world.createTransformEntity(maze7a).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+    //maze wall 1e
+  const maze1e = mazeAsset.clone();
+  maze1e.position.set(-20, 0, 20);
+  maze1e.scale.set(0.10, 0.10, 0.10);
+  const maze1eEntity = world.createTransformEntity(maze1e).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 2e
+  const maze2e = mazeAsset.clone();
+  maze2e.position.set(-20, 0, 17.5);
+  maze2e.scale.set(0.10, 0.10, 0.10);
+  const maze2eEntity = world.createTransformEntity(maze2e).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 3e
+  const maze3e = mazeAsset.clone();
+  maze3e.position.set(-20, 0, 10);
+  maze3e.scale.set(0.10, 0.10, 0.10);
+  const maze3eEntity = world.createTransformEntity(maze3e).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 4e
+  const maze4e = mazeAsset.clone();
+  maze4e.position.set(-20, 0, 2.5);
+  maze4e.scale.set(0.10, 0.10, 0.10);
+  const maze4eEntity = world.createTransformEntity(maze4e).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 5e
+  const maze5e = mazeAsset.clone();
+  maze5e.position.set(-20, 0, -5);
+  maze5e.scale.set(0.10, 0.10, 0.10);
+  const maze5eEntity = world.createTransformEntity(maze5e).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
 
+
+  //back side
+    //maze wall 1b
+  const maze1b = mazeAsset.clone();
+  maze1b.position.set(25, 0, 25);
+  maze1b.rotation.y = Math.PI / 2;
+  maze1b.scale.set(0.10, 0.10, 0.10);
+  const maze1bEntity = world.createTransformEntity(maze1b).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 2b
+  const maze2b = mazeAsset.clone();
+  maze2b.position.set(17.5, 0, 25);
+  maze2b.rotation.y = Math.PI / 2;
+  maze2b.scale.set(0.10, 0.10, 0.10);
+  const maze2bEntity = world.createTransformEntity(maze2b).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 3b
+  const maze3b = mazeAsset.clone();
+  maze3b.position.set(10, 0, 25);
+  maze3b.rotation.y = Math.PI / 2;
+  maze3b.scale.set(0.10, 0.10, 0.10);
+  const maze3bEntity = world.createTransformEntity(maze3b).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 4b
+  const maze4b = mazeAsset.clone();
+  maze4b.position.set(2.5, 0, 25);
+  maze4b.rotation.y = Math.PI / 2;
+  maze4b.scale.set(0.10, 0.10, 0.10);
+  const maze4bEntity = world.createTransformEntity(maze4b).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 5b
+  const maze5b = mazeAsset.clone();
+  maze5b.position.set(-5, 0, 25);
+  maze5b.rotation.y = Math.PI / 2;
+  maze5b.scale.set(0.10, 0.10, 0.10);
+  const maze5bEntity = world.createTransformEntity(maze5b).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 6b
+  const maze6b = mazeAsset.clone();
+  maze6b.position.set(-12.5, 0, 25);
+  maze6b.rotation.y = Math.PI / 2;
+  maze6b.scale.set(0.10, 0.10, 0.10);
+  const maze6bEntity = world.createTransformEntity(maze6b).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 7b
+  const maze7b = mazeAsset.clone();
+  maze7b.position.set(-20, 0, 25);
+  maze7b.rotation.y = Math.PI / 2;
+  maze7b.scale.set(0.10, 0.10, 0.10);
+  const maze7bEntity = world.createTransformEntity(maze7b).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 1g
+  const maze1g = mazeAsset.clone();
+  maze1g.position.set(20, 0, 20);
+  maze1g.rotation.y = Math.PI / 2;
+  maze1g.scale.set(0.10, 0.10, 0.10);
+  const maze1gEntity = world.createTransformEntity(maze1g).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 2g
+  const maze2g = mazeAsset.clone();
+  maze2g.position.set(17.5, 0, 20);
+  maze2g.rotation.y = Math.PI / 2;
+  maze2g.scale.set(0.10, 0.10, 0.10);
+  const maze2gEntity = world.createTransformEntity(maze2g).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 3g
+  const maze3g = mazeAsset.clone();
+  maze3g.position.set(10, 0, 20);
+  maze3g.rotation.y = Math.PI / 2;
+  maze3g.scale.set(0.10, 0.10, 0.10);
+  const maze3gEntity = world.createTransformEntity(maze3g).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 4g
+  const maze4g = mazeAsset.clone();
+  maze4g.position.set(2.5, 0, 20);
+  maze4g.rotation.y = Math.PI / 2;
+  maze4g.scale.set(0.10, 0.10, 0.10);
+  const maze4gEntity = world.createTransformEntity(maze4g).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 5g
+  const maze5g = mazeAsset.clone();
+  maze5g.position.set(-5, 0, 20);
+  maze5g.rotation.y = Math.PI / 2;
+  maze5g.scale.set(0.10, 0.10, 0.10);
+  const maze5gEntity = world.createTransformEntity(maze5g).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 6g
+  const maze6g = mazeAsset.clone();
+  maze6g.position.set(-12.5, 0, 20);
+  maze6g.rotation.y = Math.PI / 2;
+  maze6g.scale.set(0.10, 0.10, 0.10);
+  const maze6gEntity = world.createTransformEntity(maze6g).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+
+  //front side
+    //maze wall 1c
+  const maze1c = mazeAsset.clone();
+  maze1c.position.set(25, 0, -25);
+  maze1c.rotation.y = Math.PI / 2;
+  maze1c.scale.set(0.10, 0.10, 0.10);
+  const maze1cEntity = world.createTransformEntity(maze1c).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 2c
+  const maze2c = mazeAsset.clone();
+  maze2c.position.set(17.5, 0, -25);
+  maze2c.rotation.y = Math.PI / 2;
+  maze2c.scale.set(0.10, 0.10, 0.10);
+  const maze2cEntity = world.createTransformEntity(maze2c).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 3c
+  const maze3c = mazeAsset.clone();
+  maze3c.position.set(10, 0, -25);
+  maze3c.rotation.y = Math.PI / 2;
+  maze3c.scale.set(0.10, 0.10, 0.10);
+  const maze3cEntity = world.createTransformEntity(maze3c).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 4c
+  const maze4c = mazeAsset.clone();
+  maze4c.position.set(2.5, 0, -25);
+  maze4c.rotation.y = Math.PI / 2;
+  maze4c.scale.set(0.10, 0.10, 0.10);
+  const maze4cEntity = world.createTransformEntity(maze4c).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 5c
+  const maze5c = mazeAsset.clone();
+  maze5c.position.set(-5, 0, -25);
+  maze5c.rotation.y = Math.PI / 2;
+  maze5c.scale.set(0.10, 0.10, 0.10);
+  const maze5cEntity = world.createTransformEntity(maze5c).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 6c
+  const maze6c = mazeAsset.clone();
+  maze6c.position.set(-12.5, 0, -25);
+  maze6c.rotation.y = Math.PI / 2;
+  maze6c.scale.set(0.10, 0.10, 0.10);
+  const maze6cEntity = world.createTransformEntity(maze6c).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 7c
+  const maze7c = mazeAsset.clone();
+  maze7c.position.set(-20, 0, -25);
+  maze7c.rotation.y = Math.PI / 2;
+  maze7c.scale.set(0.10, 0.10, 0.10);
+  const maze7cEntity = world.createTransformEntity(maze7c).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall d
+  const maze1d = mazeAsset.clone();
+  maze1d.position.set(20, 0, -20);
+  maze1d.rotation.y = Math.PI / 2;
+  maze1d.scale.set(0.10, 0.10, 0.10);
+  const maze1dEntity = world.createTransformEntity(maze1d).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  const maze2d = mazeAsset.clone();
+  maze2d.position.set(17.5, 0, -20);
+  maze2d.rotation.y = Math.PI / 2;
+  maze2d.scale.set(0.10, 0.10, 0.10);
+  const maze2dEntity = world.createTransformEntity(maze2d).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  const maze3d = mazeAsset.clone();
+  maze3d.position.set(10, 0, -20);
+  maze3d.rotation.y = Math.PI / 2;
+  maze3d.scale.set(0.10, 0.10, 0.10);
+  const maze3dEntity = world.createTransformEntity(maze3d).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  const maze4d = mazeAsset.clone();
+  maze4d.position.set(2.5, 0, -20);
+  maze4d.rotation.y = Math.PI / 2;
+  maze4d.scale.set(0.10, 0.10, 0.10);
+  const maze4dEntity = world.createTransformEntity(maze4d).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  const maze5d = mazeAsset.clone();
+  maze5d.position.set(-5, 0, -20);
+  maze5d.rotation.y = Math.PI / 2;
+  maze5d.scale.set(0.10, 0.10, 0.10);
+  const maze5dEntity = world.createTransformEntity(maze5d).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  const maze6d = mazeAsset.clone();
+  maze6d.position.set(-12.5, 0, -20);
+  maze6d.rotation.y = Math.PI / 2;
+  maze6d.scale.set(0.10, 0.10, 0.10);
+  const maze6dEntity = world.createTransformEntity(maze6d).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  const maze7d = mazeAsset.clone();
+  maze7d.position.set(-20, 0, -20);
+  maze7d.rotation.y = Math.PI / 2;
+  maze7d.scale.set(0.10, 0.10, 0.10);
+  const maze7dEntity = world.createTransformEntity(maze7d).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall h
+  const maze2h = mazeAsset.clone();
+  maze2h.position.set(15, 0, -15);
+  maze2h.rotation.y = Math.PI / 2;
+  maze2h.scale.set(0.10, 0.10, 0.10);
+  const maze2hEntity = world.createTransformEntity(maze2h).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  const maze3h = mazeAsset.clone();
+  maze3h.position.set(10, 0, -15);
+  maze3h.rotation.y = Math.PI / 2;
+  maze3h.scale.set(0.10, 0.10, 0.10);
+  const maze3hEntity = world.createTransformEntity(maze3h).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  const maze4h = mazeAsset.clone();
+  maze4h.position.set(2.5, 0, -15);
+  maze4h.rotation.y = Math.PI / 2;
+  maze4h.scale.set(0.10, 0.10, 0.10);
+  const maze4hEntity = world.createTransformEntity(maze4h).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  const maze5h = mazeAsset.clone();
+  maze5h.position.set(-5, 0, -15);
+  maze5h.rotation.y = Math.PI / 2;
+  maze5h.scale.set(0.10, 0.10, 0.10);
+  const maze5hEntity = world.createTransformEntity(maze5h).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  const maze6h = mazeAsset.clone();
+  maze6h.position.set(-12.5, 0, -15);
+  maze6h.rotation.y = Math.PI / 2;
+  maze6h.scale.set(0.10, 0.10, 0.10);
+  const maze6hEntity = world.createTransformEntity(maze6h).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
 
 
 
