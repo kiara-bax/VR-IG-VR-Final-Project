@@ -3,8 +3,7 @@ import {
   AssetType, Mesh, PlaneGeometry, SessionMode,
   AssetManager, World, MeshStandardMaterial,
   LocomotionEnvironment, EnvironmentType, PanelUI, Interactable, ScreenSpace,
-  PhysicsBody, PhysicsShape, PhysicsShapeType, PhysicsState, PhysicsSystem,
-  Interactable, OneHandGrabbable
+  PhysicsBody, PhysicsShape, PhysicsShapeType, PhysicsState, PhysicsSystem, OneHandGrabbable
 } from '@iwsdk/core';
 
 import { PanelSystem } from './panel.js';
@@ -22,8 +21,8 @@ const assets = {
     type: AssetType.GLTF,
     priority: 'critical',
   },
-  hedge: {
-    url: '/glxf/hedge_block.glb',
+  maze: {
+    url: 'public/glxf/hedge_block.glb',
     type: AssetType.GLTF,
     priority: 'critical',
   },
@@ -110,116 +109,104 @@ World.create(document.getElementById('scene-container'), {
   
 
   // create floor
-  const floorGeometry = new Mesh(new PlaneGeometry(200, 200));
+  const floorGeometry = new PlaneGeometry(50, 50);
   const floorMaterial = new MeshStandardMaterial({ color: 'green' });
   const floorMesh = new Mesh(floorGeometry, floorMaterial);
   floorMesh.rotation.x = -Math.PI / 2;
   const floorEntity = world.createTransformEntity(floorMesh);
-  
+
   floorEntity.addComponent(LocomotionEnvironment, { type: EnvironmentType.STATIC });
   floorEntity.addComponent(PhysicsShape, { shape: PhysicsShapeType.Auto });
   floorEntity.addComponent(PhysicsBody, { state: PhysicsState.Static });
 
-  // maze definition (1 = hedge, 0 = open)
-  const maze = [
-    [1,1,1,1,1,1,1,1],
-    [1,0,0,0,1,0,0,1],
-    [1,0,1,0,1,0,1,1],
-    [1,0,1,0,0,0,0,1],
-    [1,0,1,1,1,1,0,1],
-    [1,0,0,0,0,1,0,1],
-    [1,1,1,1,0,1,0,1],
-    [1,1,1,1,1,1,1,1],
-  ];
+  // import maze wall
+  const mazeAsset = AssetManager.getGLTF('maze').scene;
+  //maze wall 1
+  const maze1 = mazeAsset.clone();
+  maze1.position.set(25, 0, 25);
+  maze1.scale.set(0.10, 0.10, 0.10);
+  const maze1Entity = world.createTransformEntity(maze1).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 2
+  const maze2 = mazeAsset.clone();
+  maze2.position.set(25, 0, 17.5);
+  maze2.scale.set(0.10, 0.10, 0.10);
+  const maze2Entity = world.createTransformEntity(maze2).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 3
+  const maze3 = mazeAsset.clone();
+  maze3.position.set(25, 0, 10);
+  maze3.scale.set(0.10, 0.10, 0.10);
+  const maze3Entity = world.createTransformEntity(maze3).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 4
+  const maze4 = mazeAsset.clone();
+  maze4.position.set(25, 0, 2.5);
+  maze4.scale.set(0.10, 0.10, 0.10);
+  const maze4Entity = world.createTransformEntity(maze4).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 5
+  const maze5 = mazeAsset.clone();
+  maze5.position.set(25, 0, -5);
+  maze5.scale.set(0.10, 0.10, 0.10);
+  const maze5Entity = world.createTransformEntity(maze5).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 6
+  const maze6 = mazeAsset.clone();
+  maze6.position.set(25, 0, -12.5);
+  maze6.scale.set(0.10, 0.10, 0.10);
+  const maze6Entity = world.createTransformEntity(maze6).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
+  //maze wall 7
+  const maze7 = mazeAsset.clone();
+  maze7.position.set(25, 0, -20);
+  maze7.scale.set(0.10, 0.10, 0.10);
+  const maze7Entity = world.createTransformEntity(maze7).addComponent(PhysicsShape, { 
+    shape: PhysicsShapeType.Auto }).addComponent(PhysicsBody, { state: PhysicsState.Static });
 
-  const rows = maze.length;
-  const cols = maze[0].length;
-  const cellSize = floorSize / rows;
 
-  const startX = -floorSize / 2;
-  const startZ = floorSize / 2;
 
-  const entrance = { row: 1, col: 1 };
-  const exit = { row: 5, col: 6 };
 
-  const hedgeAsset = AssetManager.getGLTF('hedge').scene;
+  //import coin 3d object
   const coinAsset = AssetManager.getGLTF('coin').scene;
+  // coin1 clone
+  const coin1 = coinAsset.clone();
+  coin1.position.set(6, 1, 6);
+  coin1.scale.set(0.5, 0.5, 0.5);
+  const coin1Entity = world.createTransformEntity(coin1).addComponent(Interactable);
+  coin1Entity.object3D.addEventListener("pointerdown", removeCoin1);
 
-  const openCells = [];
-
-  // spawn hedge function
-  function spawnHedge(x, z) {
-    const hedge = hedgeAsset.clone();
-    hedge.scale.set(0.25, 0.25, 0.25);
-    hedge.position.set(x, 0.5, z); // half height above floor
-
-    const hedgeEntity = world.createTransformEntity(hedge);
-    hedgeEntity.addComponent(PhysicsShape, {
-      shape: PhysicsShapeType.Box,
-      size: { x: cellSize * 0.25, y: 4 * 0.25, z: cellSize * 0.25 }
-    });
-    hedgeEntity.addComponent(PhysicsBody, { state: PhysicsState.Static });
+  function removeCoin1(){
+    coin1Entity.destroy();
+    score += 1;
+    updateScoreboard();
   }
 
-  // spawn coin function
-  function spawnCoin(x, z) {
-    const coin = coinAsset.clone();
-    coin.scale.set(0.5, 0.5, 0.5);
-    coin.position.set(x, 1.5, z); // above floor
+  // coin2 clone
+  const coin2 = coinAsset.clone();
+  coin2.position.set(20, 1, -25);
+  coin2.scale.set(0.5, 0.5, 0.5);
+  const coin2Entity = world.createTransformEntity(coin2).addComponent(Interactable);
+  coin2Entity.object3D.addEventListener("pointerdown", removeCoin2);
 
-    const coinEntity = world.createTransformEntity(coin);
-    coinEntity.addComponent(PhysicsShape, { shape: PhysicsShapeType.Auto });
-    coinEntity.addComponent(PhysicsBody, { state: PhysicsState.Kinematic });
+  function removeCoin2(){
+    coin2Entity.destroy();
+    score += 1;
+    updateScoreboard();
   }
 
-  // create maze
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < cols; col++) {
-      const x = startX + col * cellSize;
-      const z = startZ - row * cellSize;
+  //coin3 clone
+  const coin3 = coinAsset.clone();
+  coin3.position.set(30, 1, 8);
+  coin3.scale.set(0.5, 0.5, 0.5);
+  const coin3Entity = world.createTransformEntity(coin3).addComponent(Interactable);
+  coin3Entity.object3D.addEventListener("pointerdown", removeCoin3);
 
-      if (maze[row][col] === 1) {
-        spawnHedge(x, z);
-      } else {
-        openCells.push({ x, z });
-      }
-    }
+  function removeCoin3(){
+    coin3Entity.destroy();
+    score += 1;
+    updateScoreboard();
   }
-
-  // player start position
-  const player = world.getPlayer();
-  player.setPosition(startX + entrance.col * cellSize, 1, startZ - entrance.row * cellSize);
-  player.setRotation(0, Math.PI, 0);
-
-  // exit coin
-  spawnCoin(startX + exit.col * cellSize, startZ - exit.row * cellSize);
-
-  // additional random coins
-  for (let i = 0; i < 5; i++) {
-    const cell = openCells[Math.floor(Math.random() * openCells.length)];
-    if (cell) spawnCoin(cell.x, cell.z);
-  }
-
-  // game loop for end detection
-  const chime = AssetManager.getAudio("chimeSound");
-
-  function gameLoop() {
-    const cam = world.camera.position;
-    const exitX = startX + exit.col * cellSize;
-    const exitZ = startZ - exit.row * cellSize;
-
-    const dx = cam.x - exitX;
-    const dz = cam.z - exitZ;
-
-    if (Math.sqrt(dx * dx + dz * dz) < 1.2) {
-      chime.play();
-      console.log("You have reached the end of the maze!");
-    }
-
-    requestAnimationFrame(gameLoop);
-  }
-
-  gameLoop();
   // vvvvvvvv EVERYTHING BELOW WAS ADDED TO DISPLAY A BUTTON TO ENTER VR FOR QUEST 1 DEVICES vvvvvv
   //          (for some reason IWSDK doesn't show Enter VR button on Quest 1)
   world.registerSystem(PanelSystem);
