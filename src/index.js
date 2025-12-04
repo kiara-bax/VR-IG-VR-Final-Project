@@ -3,7 +3,9 @@ import {
   AssetType, Mesh, PlaneGeometry, SessionMode,
   AssetManager, World, MeshStandardMaterial,
   LocomotionEnvironment, EnvironmentType, PanelUI, Interactable, ScreenSpace,
-  PhysicsBody, PhysicsShape, PhysicsShapeType, PhysicsState, PhysicsSystem, OneHandGrabbable
+  PhysicsBody, PhysicsShape, PhysicsShapeType, PhysicsState, PhysicsSystem, OneHandGrabbable,
+  AudioUtils,
+  AudioSource
 } from '@iwsdk/core';
 
 import { PanelSystem } from './panel.js';
@@ -237,9 +239,7 @@ World.create(document.getElementById('scene-container'), {
         wall.rotation.y = pos.rotY;
       }
 
-      world.createTransformEntity(wall).addComponent(
-        PhysicsShape, { shape: PhysicsShapeType.Auto}).addComponent(
-          PhysicsBody, {state: PhysicsState.Static})
+      world.createTransformEntity(wall).addComponent(LocomotionEnvironment, { type: EnvironmentType.STATIC });
     });
   }
 
@@ -248,9 +248,9 @@ World.create(document.getElementById('scene-container'), {
   const coinAsset = AssetManager.getGLTF('coin').scene;
   //coin positions
   const coinPositions = [
-    { x: 5,   y: 1, z: -15, rotY: Math.PI / 2 },
-    { x: 2.5,  y: 1, z: -20, rotY: Math.PI / 2 },
-    { x: -2,   y: 1, z: -10, rotY: Math.PI / 2 },
+    { x: 5,   y: 1, z: -14.5,  },
+    { x: 2.5,  y: 1, z: -19.5, rotY: Math.PI / 2 },
+    { x: -2,   y: 1, z: -9.5, rotY: Math.PI / 2 },
   ];
 
   //spawn coin loop
@@ -260,6 +260,13 @@ World.create(document.getElementById('scene-container'), {
       coin.position.set(pos.x, pos.y, pos.z);
       coin.scale.set(0.15, 0.15, 0.15);
 
+  // const soundEntity = world.createTransformEntity(soundAsset);
+  //soundEntity.addComponent(AudioSource, {
+  //   src: '/public/audio/chime.mp3',
+  //   loop: false,
+  //   volume: 1,
+  //   positional: false
+  // });
   const coinEntity = world.createTransformEntity(coin).addComponent(Interactable);
   coinEntity.object3D.addEventListener("pointerdown", removeCoin);
 
