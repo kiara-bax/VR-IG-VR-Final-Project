@@ -14,7 +14,7 @@ import { CanvasTexture, MeshBasicMaterial, DoubleSide } from 'three';
 // assets
 const assets = {
   chimeSound: {
-    url: '/audio/chime.mp3',
+    url: '/audio/chime.wav',
     type: AssetType.Audio,
     priority: 'background'
   },
@@ -24,7 +24,7 @@ const assets = {
     priority: 'critical',
   },
   maze: {
-    url: 'public/glxf/hedge_block.glb',
+    url: '/glxf/hedge_block.glb',
     type: AssetType.GLTF,
     priority: 'critical',
   },
@@ -46,6 +46,15 @@ World.create(document.getElementById('scene-container'), {
 }).then((world) => {
 
   const {camera} = world;
+
+  // //sound entity
+  // const soundEntity = world.createTransformEntity();
+  // soundEntity.addComponent(AudioSource, {
+  //   src: 'chimeSound',
+  //   loop: false,
+  //   volume: 1,
+  //   positional: false
+  // });
 
   //scoreboard
   // create a message board using a canvas texture (scoreBox)
@@ -238,7 +247,6 @@ World.create(document.getElementById('scene-container'), {
       if (pos.rotY !== undefined) {
         wall.rotation.y = pos.rotY;
       }
-
       world.createTransformEntity(wall).addComponent(LocomotionEnvironment, { type: EnvironmentType.STATIC });
     });
   }
@@ -260,21 +268,18 @@ World.create(document.getElementById('scene-container'), {
       coin.position.set(pos.x, pos.y, pos.z);
       coin.scale.set(0.15, 0.15, 0.15);
 
-  // const soundEntity = world.createTransformEntity(soundAsset);
-  //soundEntity.addComponent(AudioSource, {
-  //   src: '/public/audio/chime.mp3',
-  //   loop: false,
-  //   volume: 1,
-  //   positional: false
-  // });
-  const coinEntity = world.createTransformEntity(coin).addComponent(Interactable);
-  coinEntity.object3D.addEventListener("pointerdown", removeCoin);
+      const coinEntity = world.createTransformEntity(coin).addComponent(Interactable);
+      coinEntity.object3D.addEventListener("pointerdown", removeCoin);
 
-  function removeCoin(){
-    coinEntity.destroy();
-    score += 1;
-    updateScoreboard();
-  }
+      function removeCoin(){
+        coinEntity.destroy();
+        score += 1;
+        updateScoreboard();
+        // //chime 
+        // if (audioComp && typeof audioComp.play === 'function') {
+        //   audioComp.play();
+        // }
+      }
     });
   }
 
